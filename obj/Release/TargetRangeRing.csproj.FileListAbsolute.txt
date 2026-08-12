@@ -1,0 +1,12 @@
+c:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.csproj.AssemblyReference.cache
+c:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.AssemblyInfoInputs.cache
+c:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.AssemblyInfo.cs
+c:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.csproj.CoreCompileInputs.cache
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\TargetRangeRing\TargetRangeRing.deps.json
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\TargetRangeRing\TargetRangeRing.dll
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\TargetRangeRing\TargetRangeRing.pdb
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.dll
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\refint\TargetRangeRing.dll
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\TargetRangeRing.pdb
+C:\Users\ROG\AppData\Roaming\XIVLauncherCN\pluginConfigs\PromeRotation\Plugins\My Plugin\TargetRangeRing\obj\Release\ref\TargetRangeRing.dll
