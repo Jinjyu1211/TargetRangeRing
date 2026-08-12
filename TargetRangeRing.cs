@@ -12,7 +12,7 @@ namespace TargetRangeRing;
     name: "TargetRangeRing",
     author: "Jinyu",
     description: "在当前目标脚下绘制自动攻击圈与最大攻击圈",
-    version: "0.1.0")]
+    version: "0.2.0")]
 public sealed class TargetRangeRingPlugin : IPromePlugin, IDisposable
 {
     private TargetRingDrawer? _drawer;
