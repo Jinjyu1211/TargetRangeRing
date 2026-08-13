@@ -37,7 +37,13 @@ internal sealed class TargetRingDrawer : IDisposable
     private ulong _lastTargetId;
     private uint _lastJobId;
     private bool _loggedJobCheck;
-    private bool _loggedDrawCheck;
+    private RenderBackend _lastBackend = RenderBackend.ImGui;
+
+    private VfxManager? _vfx;
+    private VfxHandle? _autoVfx;
+    private VfxHandle? _maxVfx;
+    private string? _autoPath;
+    private string? _maxPath;
 
     public void Update()
     {
@@ -61,29 +67,15 @@ internal sealed class TargetRingDrawer : IDisposable
 
         if (classJobRowId == 0 || !AllowedJobs.Contains(classJobRowId))
         {
-            if (_lastTargetId != 0) RemoveAllRings();
+            RemoveAllRings();
             _lastTargetId = 0;
             return;
         }
 
         var target = Svc.Targets.Target;
-        if (target == null || !target.IsValid())
+        if (target == null || !target.IsValid() || target is not IBattleChara bc || target is IPlayerCharacter)
         {
-            if (_lastTargetId != 0) RemoveAllRings();
-            _lastTargetId = 0;
-            return;
-        }
-
-        if (target is not IBattleChara bc)
-        {
-            if (_lastTargetId != 0) RemoveAllRings();
-            _lastTargetId = 0;
-            return;
-        }
-
-        if (target is IPlayerCharacter)
-        {
-            if (_lastTargetId != 0) RemoveAllRings();
+            RemoveAllRings();
             _lastTargetId = 0;
             return;
         }
@@ -91,16 +83,17 @@ internal sealed class TargetRingDrawer : IDisposable
         var hitboxRadius = bc.HitboxRadius;
         if (hitboxRadius <= 0f || hitboxRadius > 200f)
         {
-            if (_lastTargetId != 0) RemoveAllRings();
+            RemoveAllRings();
             _lastTargetId = 0;
             return;
         }
 
         var targetId = bc.GameObjectId;
-        if (targetId != _lastTargetId)
+        if (targetId != _lastTargetId || config.Backend != _lastBackend)
         {
-            RemoveAllRings();
             _lastTargetId = targetId;
+            _lastBackend = config.Backend;
+            RemoveAllRings();
         }
 
         if (!config.Enabled)
@@ -111,28 +104,26 @@ internal sealed class TargetRingDrawer : IDisposable
 
         try
         {
-            var baseRadius = GetBaseRadius(bc, hitboxRadius);
-            float autoAttackRadius = hitboxRadius + AutoAttackDistance;
-            float maxAttackRadius = hitboxRadius + MaxAttackDistance;
+            float autoRadius = hitboxRadius + AutoAttackDistance;
+            float maxRadius = hitboxRadius + MaxAttackDistance;
+            var center = target.Position;
 
-            var targetPos = target.Position;
-            var groundPos = new Vector3(targetPos.X, targetPos.Y, targetPos.Z);
-
-            if (!_loggedDrawCheck)
+            if (config.Backend == RenderBackend.VFX)
             {
-                _loggedDrawCheck = true;
-                Svc.Log.Info($"[TargetRangeRing] targetId={targetId}, pos=({targetPos.X:F1},{targetPos.Y:F1},{targetPos.Z:F1}), ground=({groundPos.X:F1},{groundPos.Y:F1},{groundPos.Z:F1}), hitbox={hitboxRadius:F1}, baseR={baseRadius:F1}, autoR={autoAttackRadius:F1}, maxR={maxAttackRadius:F1}");
+                UpdateVfxRings(center, autoRadius, maxRadius, config);
             }
+            else
+            {
+                var autoGeometry = new CircleGeometry(center, autoRadius);
+                var autoStyle = new DrawStyle(null, config.AutoAttackColor, config.Thickness);
+                Plugin.Instance.DrawManager.Add(AutoAttackRingId, autoGeometry, autoStyle, durationMs: DurationMs,
+                    rendererType: config.Backend == RenderBackend.DirectX ? RendererType.DirectX : RendererType.ImGui);
 
-            RemoveAllRings();
-
-            var autoGeometry = new CircleGeometry(groundPos, autoAttackRadius);
-            var autoStyle = new DrawStyle(null, config.AutoAttackColor, config.Thickness);
-            Plugin.Instance.DrawManager.Add(AutoAttackRingId, autoGeometry, autoStyle, durationMs: DurationMs, rendererType: RendererType.ImGui);
-
-            var maxGeometry = new CircleGeometry(groundPos, maxAttackRadius);
-            var maxStyle = new DrawStyle(null, config.MaxAttackColor, config.Thickness);
-            Plugin.Instance.DrawManager.Add(MaxAttackRingId, maxGeometry, maxStyle, durationMs: DurationMs, rendererType: RendererType.ImGui);
+                var maxGeometry = new CircleGeometry(center, maxRadius);
+                var maxStyle = new DrawStyle(null, config.MaxAttackColor, config.Thickness);
+                Plugin.Instance.DrawManager.Add(MaxAttackRingId, maxGeometry, maxStyle, durationMs: DurationMs,
+                    rendererType: config.Backend == RenderBackend.DirectX ? RendererType.DirectX : RendererType.ImGui);
+            }
         }
         catch (Exception ex)
         {
@@ -140,31 +131,47 @@ internal sealed class TargetRingDrawer : IDisposable
         }
     }
 
-    private static unsafe float GetBaseRadius(IBattleChara target, float hitboxRadius)
+    private void UpdateVfxRings(Vector3 center, float autoRadius, float maxRadius, Config config)
     {
-        try
-        {
-            var addr = target.Address;
-            if (addr != IntPtr.Zero)
-            {
-                var bc = (BattleChara*)addr;
-                float radiusTrue = bc->GetRadius(true);
-                float radiusFalse = bc->GetRadius(false);
-                Svc.Log.Info($"[TargetRangeRing] GetRadius(true)={radiusTrue:F1}, GetRadius(false)={radiusFalse:F1}, HitboxRadius={hitboxRadius:F1}");
-                if (radiusTrue > 0f && radiusTrue < 500f)
-                {
-                    return radiusTrue;
-                }
-            }
-        }
-        catch
-        {
-        }
+        EnsureVfxReady();
+        if (_vfx == null || !_vfx.IsReady) return;
 
-        return hitboxRadius;
+        _autoVfx = EnsureRing(_autoVfx, ref _autoPath, autoRadius, config.VfxThickness, config.AutoAttackColor, center);
+        _maxVfx = EnsureRing(_maxVfx, ref _maxPath, maxRadius, config.VfxThickness, config.MaxAttackColor, center);
+
+        if (_autoVfx != null) _vfx.SetMatrix(_autoVfx, center, autoRadius);
+        if (_maxVfx != null) _vfx.SetMatrix(_maxVfx, center, maxRadius);
     }
 
-    private static void RemoveAllRings()
+    private VfxHandle? EnsureRing(VfxHandle? current, ref string? path, float outer, float thickness, Vector4 color, Vector3 center)
+    {
+        string? newPath = _vfx!.GetOrRegisterDonut(Math.Max(0f, outer - thickness), outer);
+        if (newPath == null)
+        {
+            current?.Dispose();
+            path = null;
+            return null;
+        }
+        if (path == newPath) return current;
+        current?.Dispose();
+        path = newPath;
+        return _vfx.CreateCircle(newPath, center, outer, color);
+    }
+
+    private void EnsureVfxReady()
+    {
+        if (_vfx != null) return;
+        _vfx = new VfxManager();
+        if (!_vfx.Initialize())
+        {
+            Svc.Log.Error("[TargetRangeRing] VFX 引擎初始化失败");
+            _vfx.Dispose();
+            _vfx = null;
+            return;
+        }
+    }
+
+    private void RemoveAllRings()
     {
         try
         {
@@ -174,6 +181,13 @@ internal sealed class TargetRingDrawer : IDisposable
         catch
         {
         }
+
+        _autoVfx?.Dispose();
+        _autoVfx = null;
+        _maxVfx?.Dispose();
+        _maxVfx = null;
+        _autoPath = null;
+        _maxPath = null;
     }
 
     public void Dispose()
@@ -181,5 +195,7 @@ internal sealed class TargetRingDrawer : IDisposable
         if (_disposed) return;
         _disposed = true;
         RemoveAllRings();
+        _vfx?.Dispose();
+        _vfx = null;
     }
 }
