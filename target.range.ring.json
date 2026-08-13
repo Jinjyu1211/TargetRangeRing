@@ -4,7 +4,7 @@
     "name": "TargetRangeRing",
     "author": "Jinyu",
     "description": "目标范围圈 - 在目标脚下绘制自动攻击圈与最大攻击圈",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "tags": [
       "utility",
       "ui",
@@ -12,10 +12,10 @@
     ],
     "apiVersion": 15,
     "referencePromeVersion": "1.5.9.4",
-    "downloadUrl": "https://github.com/Jinjyu1211/TargetRangeRing/releases/download/v0.2.0/target.range.ring.zip",
+    "downloadUrl": "https://github.com/Jinjyu1211/TargetRangeRing/releases/download/v0.3.0/target.range.ring.zip",
     "coverUrl": "",
     "sourceRepositoryUrl": "https://github.com/Jinjyu1211/TargetRangeRing",
     "sponsorUrl": "",
-    "sha256": "3f2891b2d3a5644023c580f5a2bfb525cfc945c9a5af7680506ac1c92f1b163c"
+    "sha256": "3a61e3f555200583389e2d4b78a14ca19da5705a88a2602c69f44e60f5b6584d"
   }
 ]
