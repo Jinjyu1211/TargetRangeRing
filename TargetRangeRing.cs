@@ -4,6 +4,7 @@ using Dalamud.Bindings.ImGui;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
 using PromeRotation.Plugins;
+using PromeRotation.Spatial.Drawing;
 
 namespace TargetRangeRing;
 
@@ -12,7 +13,7 @@ namespace TargetRangeRing;
     name: "TargetRangeRing",
     author: "Jinyu",
     description: "在当前目标脚下绘制自动攻击圈与最大攻击圈",
-    version: "0.2.0")]
+    version: "0.3.0")]
 public sealed class TargetRangeRingPlugin : IPromePlugin, IDisposable
 {
     private TargetRingDrawer? _drawer;
@@ -46,6 +47,23 @@ public sealed class TargetRangeRingPlugin : IPromePlugin, IDisposable
         if (ImGui.SliderFloat("圈线粗细", ref thickness, 0.1f, 10f))
         {
             config.Thickness = thickness;
+            SaveConfig();
+        }
+
+        var vfxThickness = config.VfxThickness;
+        if (ImGui.SliderFloat("VFX 圆环粗细(米)", ref vfxThickness, 0.05f, 3f))
+        {
+            config.VfxThickness = vfxThickness;
+            SaveConfig();
+        }
+
+        var backendLabels = new[] { "ImGui", "DirectX", "VFX" };
+        var backendValues = new[] { RenderBackend.ImGui, RenderBackend.DirectX, RenderBackend.VFX };
+        var backendIndex = Array.IndexOf(backendValues, config.Backend);
+        if (backendIndex < 0) backendIndex = 0;
+        if (ImGui.Combo("渲染方式", ref backendIndex, backendLabels, backendLabels.Length))
+        {
+            config.Backend = backendValues[backendIndex];
             SaveConfig();
         }
 
