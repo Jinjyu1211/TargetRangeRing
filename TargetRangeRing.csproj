@@ -20,9 +20,19 @@
 
         <RootNamespace>TargetRangeRing</RootNamespace>
         <AssemblyName>TargetRangeRing</AssemblyName>
-        <Version>0.2.0.0</Version>
-        <AssemblyVersion>0.2.0.0</AssemblyVersion>
+        <Version>0.3.0.0</Version>
+        <AssemblyVersion>0.3.0.0</AssemblyVersion>
     </PropertyGroup>
+
+    <!-- 嵌入 VFX 模板资源 -->
+    <ItemGroup>
+        <EmbeddedResource Include="tmp_circle.avfx">
+            <LogicalName>TargetRangeRing.Resources.tmp_circle</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Include="tmp_donut.avfx">
+            <LogicalName>TargetRangeRing.Resources.tmp_donut</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
 
     <!-- 手动引用 Dalamud、PromeRotation 以及 ECommons -->
     <ItemGroup>
