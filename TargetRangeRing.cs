@@ -12,8 +12,8 @@ namespace TargetRangeRing;
     id: "target.range.ring",
     name: "TargetRangeRing",
     author: "Jinyu",
-    description: "在当前目标脚下绘制自动攻击圈与最大攻击圈",
-    version: "0.3.0")]
+    description: "在当前目标脚下绘制自动攻击圈、最大攻击圈与自定义距离圈",
+    version: "0.4.0")]
 public sealed class TargetRangeRingPlugin : IPromePlugin, IDisposable
 {
     private TargetRingDrawer? _drawer;
@@ -33,7 +33,7 @@ public sealed class TargetRangeRingPlugin : IPromePlugin, IDisposable
         if (_config is not { } config) return;
 
         ImGui.TextUnformatted("目标攻击范围圈");
-        ImGui.TextDisabled("自动攻击 3 米，最大攻击 5 米");
+        ImGui.TextDisabled("自动攻击 3 米，最大攻击 6 米，自定义判定圈可调");
         ImGui.Separator();
 
         var enabled = config.Enabled;
@@ -84,6 +84,30 @@ public sealed class TargetRangeRingPlugin : IPromePlugin, IDisposable
         if (ImGui.ColorEdit4("颜色##max", ref maxColor))
         {
             config.MaxAttackColor = maxColor;
+            SaveConfig();
+        }
+
+        ImGui.Separator();
+        ImGui.TextUnformatted("自定义攻击判定圈");
+
+        var customEnabled = config.CustomRingEnabled;
+        if (ImGui.Checkbox("启用##custom", ref customEnabled))
+        {
+            config.CustomRingEnabled = customEnabled;
+            SaveConfig();
+        }
+
+        var customDistance = config.CustomRingDistance;
+        if (ImGui.SliderFloat("距离(米)", ref customDistance, 0f, 30f))
+        {
+            config.CustomRingDistance = customDistance;
+            SaveConfig();
+        }
+
+        var customColor = config.CustomRingColor;
+        if (ImGui.ColorEdit4("颜色##custom", ref customColor))
+        {
+            config.CustomRingColor = customColor;
             SaveConfig();
         }
     }

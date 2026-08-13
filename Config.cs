@@ -21,4 +21,8 @@ public sealed class Config : IPluginConfiguration
 
     public Vector4 AutoAttackColor { get; set; } = new(1f, 0.8f, 0f, 0.8f);
     public Vector4 MaxAttackColor { get; set; } = new(0.3f, 0.7f, 0.3f, 0.8f);
+
+    public bool CustomRingEnabled { get; set; }
+    public float CustomRingDistance { get; set; } = 8f;
+    public Vector4 CustomRingColor { get; set; } = new(0.9f, 0.4f, 0.4f, 0.8f);
 }

@@ -20,8 +20,8 @@
 
         <RootNamespace>TargetRangeRing</RootNamespace>
         <AssemblyName>TargetRangeRing</AssemblyName>
-        <Version>0.3.0.0</Version>
-        <AssemblyVersion>0.3.0.0</AssemblyVersion>
+        <Version>0.4.0.0</Version>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
     </PropertyGroup>
 
     <!-- 嵌入 VFX 模板资源 -->
