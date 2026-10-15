@@ -20,9 +20,13 @@
 
         <RootNamespace>TargetRangeRing</RootNamespace>
         <AssemblyName>TargetRangeRing</AssemblyName>
-        <Version>0.4.0.0</Version>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+        <Version>0.6.3.0</Version>
+        <AssemblyVersion>0.6.3.0</AssemblyVersion>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="tests/**/*.cs" />
+    </ItemGroup>
 
     <!-- 嵌入 VFX 模板资源 -->
     <ItemGroup>

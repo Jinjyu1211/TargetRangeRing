@@ -12,7 +12,7 @@ public enum RenderBackend
 
 public sealed class Config : IPluginConfiguration
 {
-    public int Version { get; set; } = 11;
+    public int Version { get; set; } = 12;
 
     public bool Enabled { get; set; } = true;
     public float Thickness { get; set; } = 1f;
@@ -25,4 +25,12 @@ public sealed class Config : IPluginConfiguration
     public bool CustomRingEnabled { get; set; }
     public float CustomRingDistance { get; set; } = 8f;
     public Vector4 CustomRingColor { get; set; } = new(0.9f, 0.4f, 0.4f, 0.8f);
+
+    public bool PlayerRingEnabled { get; set; } = true;
+    public float PlayerRingSize { get; set; } = 0.5f;
+    public Vector4 PlayerRingColor { get; set; } = new(0.2f, 0.6f, 1f, 0.9f);
+
+    public bool ShowInCombat { get; set; }
+    public bool ShowInInstance { get; set; }
+    public bool ForceDisplay { get; set; }
 }

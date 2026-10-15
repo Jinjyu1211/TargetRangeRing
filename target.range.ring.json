@@ -4,7 +4,7 @@
     "name": "TargetRangeRing",
     "author": "Jinyu",
     "description": "目标范围圈 - 在目标脚下绘制自动攻击圈、最大攻击圈与自定义距离圈，并显示本地玩家判定点",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "tags": [
       "utility",
       "ui",
@@ -12,10 +12,10 @@
     ],
     "apiVersion": 15,
     "referencePromeVersion": "1.5.9.4",
-    "downloadUrl": "https://github.com/Jinjyu1211/TargetRangeRing/releases/download/v0.6.2/target.range.ring.zip",
+    "downloadUrl": "https://github.com/Jinjyu1211/TargetRangeRing/releases/download/v0.6.3/target.range.ring.zip",
     "coverUrl": "",
     "sourceRepositoryUrl": "https://github.com/Jinjyu1211/TargetRangeRing",
     "sponsorUrl": "",
-    "sha256": "c44c9e19a0eff9e78bedc5916c07387bbef4d8f022b69889c85769e32eb3e112"
+    "sha256": "42962d9c4ce88f8f631127aae6fc79a828a85edf920f664a2180a8750bf66bef"
   }
 ]

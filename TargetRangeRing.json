@@ -1,11 +1,16 @@
 {
   "name": "TargetRangeRing",
-  "description": "在当前目标脚下绘制自动攻击圈、最大攻击圈与自定义距离圈",
+  "description": "在当前目标脚下绘制自动攻击圈、最大攻击圈与自定义距离圈，并显示本地玩家判定点",
   "author": "Jinyu",
-  "version": "0.4.0",
+  "version": "0.6.3",
   "url": "https://github.com/Jinjyu1211/TargetRangeRing",
-  "downloadLink": "https://github.com/Jinjyu1211/TargetRangeRing/releases/download/v0.4.0/TargetRangeRing.dll",
-  "tags": ["promeRotation", "target", "range", "ring"],
+  "downloadLink": "https://github.com/Jinjyu1211/TargetRangeRing/releases/download/v0.6.3/TargetRangeRing.dll",
+  "tags": [
+    "promeRotation",
+    "target",
+    "range",
+    "ring"
+  ],
   "internalName": "target.range.ring",
   "targetPluginLoader": "PromeRotation"
 }

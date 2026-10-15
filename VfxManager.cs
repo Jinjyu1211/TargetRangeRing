@@ -30,6 +30,8 @@ public unsafe sealed class VfxManager : IDisposable
     private delegate nint VfxResourcesSetupCompleteFn(nint rm);
 
     private readonly object _lock = new();
+    private readonly Dictionary<float, string> _donutPaths = new();
+    private byte[]? _donutTemplate;
     private readonly HashSet<string> _registered = new(StringComparer.OrdinalIgnoreCase);
 
     private CreateVfxFn? _createVfx;
@@ -95,16 +97,22 @@ public unsafe sealed class VfxManager : IDisposable
     {
         if (_disposed || !IsReady || outer <= 0f) return null;
         float num = Math.Clamp(RoundTo(inner / outer, 0.005f), 0.001f, 0.999f);
-        string path = VfxBase + "/customDonut" + Format(num) + ".avfx";
         lock (_lock)
         {
-            if (_registered.Contains(path)) return path;
+            if (_donutPaths.TryGetValue(num, out var cachedPath)) return cachedPath;
+            string path = VfxBase + "/customDonut" + Format(num) + ".avfx";
+            if (_registered.Contains(path))
+            {
+                _donutPaths[num] = path;
+                return path;
+            }
             if (_registered.Count >= ResourceLimit) return null;
             try
             {
-                byte[] data = BuildDonutTemplate(LoadEmbeddedDonut(), num);
+                byte[] data = BuildDonutTemplate(_donutTemplate ??= LoadEmbeddedDonut(), num);
                 if (!Register(path, data)) return null;
                 _registered.Add(path);
+                _donutPaths[num] = path;
                 Svc.Log.Information("[TargetRangeRing] Registered donut template {Path} (inner/outer={Num})", path, num);
                 return path;
             }
@@ -227,10 +235,12 @@ public unsafe sealed class VfxManager : IDisposable
     public bool SetColor(VfxHandle vfx, Vector4 color)
     {
         if (vfx.Disposed || vfx.Handle == IntPtr.Zero || _setOmenColor == null) return false;
+        if (vfx.LastColor == color) return true;
         try
         {
             // omen 渲染对透明度的处理不同于 ImGui，强制不透明以保证清晰可见
             _setOmenColor(vfx.Handle, color.X, color.Y, color.Z, 1f);
+            vfx.LastColor = color;
             return true;
         }
         catch (Exception ex)
@@ -243,15 +253,18 @@ public unsafe sealed class VfxManager : IDisposable
     public bool SetMatrix(VfxHandle vfx, Vector3 center, float radius, float rotation = 0f)
     {
         if (vfx.Disposed || vfx.Handle == IntPtr.Zero || vfx.MatrixPtr == IntPtr.Zero || _setOmenMatrix == null) return false;
+        if (vfx.HasMatrix && vfx.LastCenter == center && vfx.LastRadius == radius && vfx.LastRotation == rotation) return true;
         try
         {
             var matrix = Matrix4x4.CreateScale(new Vector3(radius, 10f, radius))
                        * Matrix4x4.CreateRotationY(rotation)
                        * Matrix4x4.CreateTranslation(center);
             Marshal.StructureToPtr(matrix, vfx.MatrixPtr, false);
-            nint ret = _setOmenMatrix(vfx.Handle, vfx.MatrixPtr);
-            Svc.Log.Debug("[TargetRangeRing] SetMatrix handle={Handle:X} center=({X:F1},{Y:F1},{Z:F1}) r={Radius:F1} ret={Ret:X}",
-                vfx.Handle, center.X, center.Y, center.Z, radius, ret);
+            _setOmenMatrix(vfx.Handle, vfx.MatrixPtr);
+            vfx.LastCenter = center;
+            vfx.LastRadius = radius;
+            vfx.LastRotation = rotation;
+            vfx.HasMatrix = true;
             return true;
         }
         catch (Exception ex)
@@ -276,6 +289,8 @@ public unsafe sealed class VfxManager : IDisposable
         _disposed = true;
         IsReady = false;
         _registered.Clear();
+        _donutPaths.Clear();
+        _donutTemplate = null;
     }
 
     private bool Register(string path, byte[] data)
@@ -398,6 +413,12 @@ public sealed class VfxHandle : IDisposable
     public nint PathPtr { get; }
     public nint ParamBlockPtr { get; }
     public nint MatrixPtr { get; }
+
+    internal Vector4? LastColor { get; set; }
+    internal bool HasMatrix { get; set; }
+    internal Vector3 LastCenter { get; set; }
+    internal float LastRadius { get; set; }
+    internal float LastRotation { get; set; }
 
     public bool Disposed => _disposedFlag != 0;
 
